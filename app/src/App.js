@@ -1,7 +1,21 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useState } from 'react'
 
 function App() {
+
+  const [name, setName] = useState('');
+  const [message, setMessage] = useState('');
+  const getDataFromApi = async (e) => {
+    e.preventDefault();
+    console.log("name: ", name);
+    const data = await fetch(`http://localhost:7071/api/HttpExample?name=${name}`);
+    const json = await data.json()
+    if (json.message) {
+      setMessage(json.message);
+    }
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -9,14 +23,19 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <form id="form1" className="App-form" onSubmit={e => getDataFromApi(e)}>
+          <div>
+            <input
+              type="text"
+              id="name"
+              className="App-input"
+              placeholder="Name"
+              value={name}
+              onChange={e => setName(e.target.value)} />
+            <button type="submit" className="App-button">Submit</button>
+          </div>
+        </form>
+        <div><h5>Message: {message} </h5></div>
       </header>
     </div>
   );
