@@ -1,44 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
-import React, { useState } from 'react'
+    import logo from './logo.svg';
+    import './App.css';
+    import React, { useState, useEffect } from 'react'
 
-function App() {
+    import NavBar from './components/NavBar';
+    import PublicHome from './components/PublicHome';
+    import PrivateHome from './components/PrivateHome';
 
-  const [name, setName] = useState('');
-  const [message, setMessage] = useState('');
-  const getDataFromApi = async (e) => {
-    e.preventDefault();
-    console.log("name: ", name);
-    const data = await fetch(`http://localhost:7071/api/HttpExample?name=${name}`);
-    const json = await data.json()
-    if (json.message) {
-      setMessage(json.message);
+
+    function App() {
+
+      const [name, setName] = useState('');
+      const [message, setMessage] = useState('');
+
+      const [isAuthenticated, userHasAuthenticated] = useState(false);
+      const [user, setUser] = useState(null);
+
+    
+      useEffect(() => {
+        getUserInfo();
+      }, []);
+
+      async function getUserInfo() {
+        try {
+
+          const response = await fetch("http://localhost:4280/.auth/me");
+          const payload = await response.json();
+          console.log("payload : ", payload);
+          const { clientPrincipal } = payload;
+
+          if (clientPrincipal) {
+            setUser(clientPrincipal);
+            userHasAuthenticated(true);
+            console.log(`clientPrincipal = ${JSON.stringify(clientPrincipal)}`);
+          }
+
+        } catch (error) {
+          console.log('No profile could be found');
+        }
+      };
+
+      return (
+        <div className="App">
+          <NavBar user={user}/>
+          <main className="column">
+            { isAuthenticated ? <PrivateHome user={user}/> : <PublicHome /> }
+          </main>
+        </div> 
+      );
     }
-  }
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <form id="form1" className="App-form" onSubmit={e => getDataFromApi(e)}>
-          <div>
-            <input
-              type="text"
-              id="name"
-              className="App-input"
-              placeholder="Name"
-              value={name}
-              onChange={e => setName(e.target.value)} />
-            <button type="submit" className="App-button">Submit</button>
-          </div>
-        </form>
-        <div><h5>Message: {message} </h5></div>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+    export default App;

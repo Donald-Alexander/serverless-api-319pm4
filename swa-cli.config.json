@@ -1,0 +1,20 @@
+{
+  "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
+  "configurations": {
+    "serverless-api-319pm4": {
+      "appLocation": "app",
+      "apiLocation": "api",
+      "outputLocation": "build",
+      "appBuildCommand": "npm run build",
+      "apiBuildCommand": "npm run build --if-present",
+      "run": "npm start",
+      "appDevserverUrl": "http://localhost:3000"
+    }
+  },
+  "routes": [
+    {
+      "route": "*",
+      "allowedRoles": ["authenticated"]
+    }
+  ]
+}
